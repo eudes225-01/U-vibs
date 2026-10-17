@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U Vibs — Vêtements Professionnels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+--bg: #0c0c10;
+--surface: rgba(255,255,255,0.045);
+--surface-hover: rgba(255,255,255,0.075);
+--glass-border: rgba(255,255,255,0.10);
+--glass-border-strong: rgba(255,255,255,0.18);
+--blue: #2997FF;
+--purple: #BF5AF2;
+--mint: #30D158;
+--gold: #FFD60A;
+--red: #FF453A;
+--text: #F5F5F7;
+--text-2: rgba(245,245,247,0.60);
+--text-3: rgba(245,245,247,0.35);
+--radius-xl: 28px;
+--radius-2xl: 40px;
+--radius-pill: 100px;
+--blur: blur(40px) saturate(180%);
+--transition: all 0.45s cubic-bezier(0.28,0.11,0.32,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+background: var(--bg);
+color: var(--text);
+overflow-x: hidden;
+-webkit-font-smoothing: antialiased;
+}
+
+.bg-canvas {
+position: fixed; inset:0; z-index:0; pointer-events:none;
+background:
+radial-gradient(ellipse 80% 60% at 10% 0%, rgba(41,151,255,0.12) 0%, transparent 60%),
+radial-gradient(ellipse 60% 50% at 90% 10%, rgba(191,90,242,0.10) 0%, transparent 55%),
+radial-gradient(ellipse 50% 40% at 50% 100%, rgba(48,209,88,0.06) 0%, transparent 55%),
+#0c0c10;
+}
+.noise-overlay {
+position: fixed; inset:0; z-index:1; pointer-events:none; opacity:0.025;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+background-size: 128px 128px;
+}
+
+.toast {
+position: fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(20px);
+z-index:9999; padding:12px 28px;
+background: rgba(28,28,36,0.92);
+backdrop-filter: blur(40px) saturate(200%);
+-webkit-backdrop-filter: blur(40px) saturate(200%);
+border: 1px solid rgba(255,255,255,0.12);
+border-radius: var(--radius-pill);
+font-size:.85rem; font-weight:500; color:var(--text);
+white-space:nowrap; pointer-events:none;
+opacity:0; transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+nav {
+position: fixed; top:20px; left:50%; transform:translateX(-50%);
+width:calc(100% - 40px); max-width:1200px;
+z-index:1000;
+background: rgba(14,14,20,0.75);
+backdrop-filter: blur(48px) saturate(180%);
+-webkit-backdrop-filter: blur(48px) saturate(180%);
+border: 1px solid var(--glass-border);
+border-radius: var(--radius-pill);
+padding:10px 20px 10px 28px;
+display:flex; align-items:center; justify-content:space-between;
+transition: var(--transition);
+box-shadow: 0 8px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.logo {
+font-family:'Outfit',sans-serif; font-weight:800; font-size:1.35rem;
+letter-spacing:.04em;
+background: linear-gradient(135deg, #fff 30%, var(--blue));
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.nav-links { display:flex; gap:32px; list-style:none; }
+.nav-links a {
+text-decoration:none; color:var(--text-2); font-weight:500; font-size:.875rem;
+transition:.2s; letter-spacing:.01em;
+}
+.nav-links a:hover { color:var(--text); }
+.nav-right { display:flex; align-items:center; gap:10px; }
+
+.nav-icon-btn {
+width:38px; height:38px; border-radius:50%;
+background:var(--surface); border:1px solid var(--glass-border);
+display:flex; align-items:center; justify-content:center;
+cursor:pointer; transition:var(--transition); color:var(--text-2);
+}
+.nav-icon-btn:hover { background:var(--surface-hover); color:var(--text); border-color:var(--glass-border-strong); }
+
+.cart-btn {
+display:flex; align-items:center; gap:8px;
+background: rgba(41,151,255,0.15);
+border: 1px solid rgba(41,151,255,0.30);
+border-radius:var(--radius-pill); padding:8px 18px;
+color:var(--blue); font-weight:600; font-size:.85rem; cursor:pointer;
+transition:var(--transition); backdrop-filter:blur(20px);
+}
+.cart-btn:hover { background:rgba(41,151,255,0.25); border-color:rgba(41,151,255,0.55); transform:scale(1.02); }
+.cart-count {
+background:var(--blue); color:#fff; font-size:.7rem; font-weight:700;
+width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cart-count.bump { transform:scale(1.5); }
+
+.hero {
+min-height:100vh; display:flex; flex-direction:column;
+align-items:center; justify-content:center; text-align:center;
+padding:160px 24px 80px; position:relative; z-index:2;
+}
+.hero-eyebrow {
+display:inline-flex; align-items:center; gap:8px;
+background:rgba(41,151,255,0.1); border:1px solid rgba(41,151,255,0.22);
+border-radius:var(--radius-pill); padding:6px 18px 6px 10px;
+font-size:.72rem; font-weight:600; color:var(--blue);
+letter-spacing:.08em; text-transform:uppercase; margin-bottom:32px;
+}
+.hero-eyebrow-dot {
+width:6px; height:6px; border-radius:50%; background:var(--blue);
+animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+0%,100%{opacity:1;transform:scale(1);}
+50%{opacity:.5;transform:scale(0.7);}
+}
+.hero h1 {
+font-family:'Outfit',sans-serif;
+font-size:clamp(3.2rem,9vw,6.5rem);
+font-weight:800; letter-spacing:-.04em; line-height:1.0;
+margin-bottom:28px;
+}
+.hero-line2 {
+background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 55%, #ff6b6b 100%);
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+background-size:200%; animation:shimmer 4s ease infinite;
+}
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+.hero-sub {
+color:var(--text-2); max-width:520px; margin:0 auto 48px;
+font-size:1.05rem; line-height:1.65; font-weight:400;
+}
+.hero-ctas { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+.btn-ios-primary {
+background: linear-gradient(135deg, var(--blue) 0%, #007AFF 100%);
+border:none; border-radius:var(--radius-pill); padding:14px 36px;
+color:#fff; font-weight:600; font-size:.95rem; cursor:pointer;
+transition:var(--transition); font-family:inherit;
+box-shadow:0 8px 32px rgba(41,151,255,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.btn-ios-primary:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 16px 48px rgba(41,151,255,0.50); }
+.btn-ios-primary:active { transform:scale(0.97); }
+
+.btn-ios-ghost {
+background:var(--surface); border:1px solid var(--glass-border-strong);
+backdrop-filter:blur(20px); border-radius:var(--radius-pill); padding:14px 36px;
+color:var(--text); font-weight:500; font-size:.95rem; cursor:pointer;
+transition:var(--transition); font-family:inherit;
+box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.btn-ios-ghost:hover { background:var(--surface-hover); border-color:rgba(255,255,255,0.25); transform:translateY(-2px); }
+
+.stats-row {
+display:flex; justify-content:center; gap:16px; flex-wrap:wrap;
+max-width:900px; margin:0 auto 100px; padding:0 24px;
+position:relative; z-index:2;
+}
+.stat-pill {
+display:flex; flex-direction:column; align-items:center;
+background:rgba(255,255,255,0.045);
+backdrop-filter:blur(40px) saturate(180%);
+-webkit-backdrop-filter:blur(40px) saturate(180%);
+border:1px solid var(--glass-border-strong);
+border-radius:var(--radius-xl); padding:24px 36px;
+min-width:160px; transition:var(--transition);
+box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.stat-pill:hover { transform:translateY(-6px) scale(1.02); border-color:rgba(41,151,255,0.35); }
+.stat-num {
+font-family:'Outfit',sans-serif; font-size:2.4rem; font-weight:800;
+letter-spacing:-.03em; color:var(--blue);
+background:linear-gradient(135deg,var(--blue),var(--purple));
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.stat-lbl { font-size:.8rem; color:var(--text-3); margin-top:6px; font-weight:500; }
+
+.section { max-width:1200px; margin:0 auto; padding:80px 24px; position:relative; z-index:2; }
+.section-header { margin-bottom:52px; }
+.section-tag {
+font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+color:var(--blue); display:block; margin-bottom:12px;
+}
+.section-title {
+font-family:'Outfit',sans-serif; font-size:clamp(1.9rem,4vw,2.8rem);
+font-weight:700; letter-spacing:-.03em;
+}
+
+.categories-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.cat-card {
+position:relative; border-radius:var(--radius-xl); overflow:hidden;
+cursor:pointer; transition:var(--transition);
+aspect-ratio:3/4;
+box-shadow:0 8px 40px rgba(0,0,0,0.4);
+}
+.cat-card:hover { transform:translateY(-10px) scale(1.01); }
+.cat-card:hover .cat-img { transform:scale(1.08); }
+.cat-img {
+width:100%; height:100%; object-fit:cover;
+transition: transform 0.7s cubic-bezier(0.25,0.1,0.25,1);
+display:block;
+}
+.cat-overlay {
+position:absolute; inset:0;
+background:linear-gradient(to top, rgba(8,8,14,0.88) 0%, rgba(8,8,14,0.1) 55%, transparent 100%);
+}
+.cat-glass-chip {
+position:absolute; bottom:20px; left:16px; right:16px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(24px) saturate(180%);
+-webkit-backdrop-filter:blur(24px) saturate(180%);
+border:1px solid rgba(255,255,255,0.14);
+border-radius:18px; padding:14px 18px;
+box-shadow:inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.cat-name { font-weight:700; font-size:1rem; margin-bottom:3px; }
+.cat-count { font-size:.72rem; color:var(--text-2); }
+
+.products-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.prod-card {
+border-radius:var(--radius-xl); overflow:hidden; cursor:pointer;
+transition:var(--transition);
+background:rgba(255,255,255,0.04);
+backdrop-filter:blur(30px) saturate(150%);
+-webkit-backdrop-filter:blur(30px) saturate(150%);
+border:1px solid var(--glass-border);
+box-shadow:0 4px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.prod-card:hover { transform:translateY(-8px); border-color:rgba(41,151,255,0.28); box-shadow:0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(41,151,255,0.15); }
+.prod-img-wrap { position:relative; overflow:hidden; }
+.prod-img {
+width:100%; aspect-ratio:3/4; object-fit:cover; display:block;
+transition:transform 0.65s cubic-bezier(0.25,0.1,0.25,1);
+}
+.prod-card:hover .prod-img { transform:scale(1.06); }
+
+.badge {
+position:absolute; top:12px; left:12px;
+backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+border-radius:var(--radius-pill); padding:4px 12px;
+font-size:.63rem; font-weight:700; letter-spacing:.06em;
+}
+.badge-new { background:rgba(41,151,255,0.85); border:1px solid rgba(41,151,255,0.6); color:#fff; }
+.badge-sale { background:rgba(255,69,58,0.85); border:1px solid rgba(255,69,58,0.6); color:#fff; }
+.badge-best { background:rgba(255,214,10,0.9); border:1px solid rgba(255,214,10,0.6); color:#1a1a00; }
+.badge-prestige { background:rgba(191,90,242,0.85); border:1px solid rgba(191,90,242,0.6); color:#fff; }
+
+.prod-quick-add {
+position:absolute; bottom:12px; right:12px;
+width:40px; height:40px; border-radius:50%;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.2);
+display:flex; align-items:center; justify-content:center;
+opacity:0; transform:scale(0.7) translateY(8px);
+transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+cursor:pointer; color:#fff;
+}
+.prod-card:hover .prod-quick-add { opacity:1; transform:scale(1) translateY(0); }
+.prod-quick-add:hover { background:var(--blue) !important; border-color:var(--blue) !important; }
+
+.prod-info { padding:16px 18px 18px; }
+.prod-brand { font-size:.63rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); margin-bottom:5px; }
+.prod-name { font-weight:600; font-size:.9rem; margin-bottom:10px; line-height:1.3; }
+.prod-footer { display:flex; align-items:center; justify-content:space-between; }
+.prod-price { font-family:'Outfit',sans-serif; font-weight:700; font-size:1.05rem; }
+.prod-price-old { font-size:.78rem; color:var(--text-3); text-decoration:line-through; margin-left:6px; font-weight:400; }
+
+.add-to-cart-btn {
+display:inline-flex; align-items:center; gap:6px;
+background:rgba(41,151,255,0.14); border:1px solid rgba(41,151,255,0.28);
+border-radius:var(--radius-pill); padding:7px 16px;
+color:var(--blue); font-size:.78rem; font-weight:600;
+cursor:pointer; transition:var(--transition); font-family:inherit;
+white-space:nowrap;
+}
+.add-to-cart-btn:hover { background:var(--blue); color:#fff; border-color:var(--blue); transform:scale(1.04); }
+.add-to-cart-btn:active { transform:scale(0.95); }
+.add-to-cart-btn svg { flex-shrink:0; }
+
+.features-wrap {
+background:rgba(255,255,255,0.035);
+backdrop-filter:blur(48px) saturate(180%);
+-webkit-backdrop-filter:blur(48px) saturate(180%);
+border:1px solid var(--glass-border-strong);
+border-radius:var(--radius-2xl); padding:52px 48px;
+display:grid; grid-template-columns:repeat(4,1fr); gap:32px;
+box-shadow:0 8px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.feat-item { text-align:center; }
+.feat-icon {
+width:56px; height:56px; margin:0 auto 18px; border-radius:16px;
+background:rgba(41,151,255,0.12); border:1px solid rgba(41,151,255,0.20);
+display:flex; align-items:center; justify-content:center;
+color:var(--blue);
+}
+.feat-title { font-weight:700; font-size:.95rem; margin-bottom:6px; }
+.feat-desc { font-size:.78rem; color:var(--text-2); line-height:1.5; }
+
+.testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.testi-card {
+background:rgba(255,255,255,0.04);
+backdrop-filter:blur(32px) saturate(160%);
+-webkit-backdrop-filter:blur(32px) saturate(160%);
+border:1px solid var(--glass-border);
+border-radius:var(--radius-xl); padding:30px;
+transition:var(--transition);
+box-shadow:0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.testi-card:hover { border-color:rgba(41,151,255,0.25); transform:translateY(-4px); }
+.testi-stars { color:var(--gold); letter-spacing:3px; font-size:.8rem; margin-bottom:18px; }
+.testi-text { color:var(--text-2); line-height:1.7; font-style:italic; margin-bottom:22px; font-size:.9rem; }
+.testi-author { display:flex; align-items:center; gap:12px; }
+.testi-av {
+width:42px; height:42px; border-radius:50%;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+display:flex; align-items:center; justify-content:center;
+font-weight:700; font-size:.9rem; flex-shrink:0;
+}
+.testi-name { font-weight:600; font-size:.88rem; }
+.testi-role { font-size:.68rem; color:var(--text-3); margin-top:2px; }
+
+/* ── CONTACT WHATSAPP ───────────────────── */
+.newsletter-wrap {
+background:linear-gradient(135deg, rgba(41,151,255,0.07) 0%, rgba(191,90,242,0.05) 100%);
+backdrop-filter:blur(40px) saturate(180%);
+-webkit-backdrop-filter:blur(40px) saturate(180%);
+border:1px solid var(--glass-border-strong);
+border-radius:var(--radius-2xl); padding:72px 48px; text-align:center;
+box-shadow:0 8px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+position:relative; overflow:hidden;
+}
+.newsletter-wrap::before {
+content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+width:300px; height:300px; border-radius:50%;
+background:radial-gradient(circle, rgba(41,151,255,0.10), transparent 70%);
+pointer-events:none;
+}
+.newsletter-title { font-family:'Outfit',sans-serif; font-size:clamp(1.8rem,4vw,2.4rem); font-weight:700; margin-bottom:12px; letter-spacing:-.02em; }
+.newsletter-sub { color:var(--text-2); max-width:480px; margin:0 auto 36px; font-size:.95rem; }
+.contact-form { display:flex; flex-direction:column; gap:14px; max-width:500px; margin:0 auto; position:relative; }
+.newsletter-input {
+width:100%;
+background:rgba(255,255,255,0.06); border:1px solid var(--glass-border-strong);
+border-radius:22px; padding:13px 22px;
+color:var(--text); font-size:.9rem; font-family:inherit; outline:none;
+transition:var(--transition);
+}
+textarea.newsletter-input { min-height:120px; resize:vertical; }
+.newsletter-input:focus { border-color:rgba(41,151,255,0.55); background:rgba(255,255,255,0.09); }
+.newsletter-input::placeholder { color:var(--text-3); }
+.wa-btn {
+display:inline-flex; align-items:center; justify-content:center; gap:10px;
+background:linear-gradient(135deg,#25D366,#128C7E);
+border:none; border-radius:var(--radius-pill); padding:14px 30px;
+color:#fff; font-weight:600; font-size:.95rem; cursor:pointer;
+font-family:inherit; transition:var(--transition);
+box-shadow:0 6px 24px rgba(37,211,102,0.35);
+}
+.wa-btn:hover { transform:translateY(-2px); box-shadow:0 12px 40px rgba(37,211,102,0.50); }
+
+footer {
+max-width:1200px; margin:0 auto; padding:72px 24px 40px;
+border-top:1px solid var(--glass-border); position:relative; z-index:2;
+}
+.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
+.footer-logo { font-family:'Outfit',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:14px; background:linear-gradient(135deg,#fff,var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.footer-desc { color:var(--text-2); font-size:.82rem; line-height:1.65; max-width:240px; }
+.footer-col h4 { font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--text-3); margin-bottom:18px; }
+.footer-col ul { list-style:none; }
+.footer-col li { margin-bottom:10px; }
+.footer-col a { color:var(--text-3); text-decoration:none; font-size:.83rem; transition:.2s; }
+.footer-col a:hover { color:var(--text); }
+.footer-bottom { text-align:center; padding-top:28px; border-top:1px solid var(--glass-border); color:var(--text-3); font-size:.73rem; }
+
+.reveal { opacity:0; transform:translateY(28px); transition:opacity 0.7s cubic-bezier(0.2,0.9,0.4,1), transform 0.7s cubic-bezier(0.2,0.9,0.4,1); }
+.reveal.in { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:.1s; }
+.reveal-delay-2 { transition-delay:.2s; }
+.reveal-delay-3 { transition-delay:.3s; }
+
+@media(max-width:1024px){
+.categories-grid,.products-grid,.features-wrap,.testi-grid { grid-template-columns:repeat(2,1fr); }
+.footer-grid { grid-template-columns:1fr 1fr; }
+.nav-links { display:none; }
+}
+@media(max-width:640px){
+.categories-grid,.products-grid,.testi-grid { grid-template-columns:1fr; }
+.features-wrap { grid-template-columns:1fr 1fr; gap:24px; padding:36px 24px; }
+.hero-ctas { flex-direction:column; align-items:center; }
+.newsletter-wrap { padding:48px 24px; }
+.section { padding:60px 20px; }
+.stats-row { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="noise-overlay"></div>
+<div id="toast" class="toast"></div>
+
+<nav>
+  <div class="logo">U VIBS</div>
+  <ul class="nav-links">
+    <li><a href="#categories">Collections</a></li>
+    <li><a href="#products">Produits</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-icon-btn" id="searchBtn" aria-label="Rechercher">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+    <button class="cart-btn" id="cartBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Panier
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="hero-eyebrow-dot"></span>
+    Nouvelle Collection Printemps-Été 2026
+  </div>
+  <h1>Habille ton<br><span class="hero-line2">ambition.</span></h1>
+  <p class="hero-sub">Des tenues professionnelles d'exception. Élégance architecturale, confort absolu, caractère affirmé. Pour les acteurs qui façonnent demain.</p>
+  <div class="hero-ctas">
+    <button class="btn-ios-primary" id="discoverBtn">Découvrir la collection</button>
+    <button class="btn-ios-ghost" id="lookbookBtn">Nous contacter</button>
+  </div>
+</section>
+
+<div class="stats-row reveal">
+  <div class="stat-pill reveal reveal-delay-1"><div class="stat-num">12k+</div><div class="stat-lbl">Clients satisfaits</div></div>
+  <div class="stat-pill reveal reveal-delay-2"><div class="stat-num">340</div><div class="stat-lbl">Pièces exclusives</div></div>
+  <div class="stat-pill reveal reveal-delay-3"><div class="stat-num">98%</div><div class="stat-lbl">Avis positifs</div></div>
+  <div class="stat-pill reveal reveal-delay-1"><div class="stat-num">72h</div><div class="stat-lbl">Livraison premium</div></div>
+</div>
+
+<div class="section" id="categories">
+  <div class="section-header reveal">
+    <span class="section-tag">Univers</span>
+    <h2 class="section-title">Explorez nos catégories</h2>
+  </div>
+  <div class="categories-grid reveal">
+    <div class="cat-card" onclick="showToast('Explorer Costumes & Tailleurs')">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&h=800&fit=crop" alt="Costumes & Tailleurs">
+      <div class="cat-overlay"></div>
+      <div class="cat-glass-chip"><div class="cat-name">Costumes & Tailleurs</div><div class="cat-count">142 articles</div></div>
+    </div>
+    <div class="cat-card" onclick="showToast('Explorer Chemises Premium')">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=800&fit=crop" alt="Chemises Premium">
+      <div class="cat-overlay"></div>
+      <div class="cat-glass-chip"><div class="cat-name">Chemises Premium</div><div class="cat-count">78 articles</div></div>
+    </div>
+    <div class="cat-card" onclick="showToast('Explorer Pantalons Ajustés')">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&h=800&fit=crop" alt="Pantalons Ajustés">
+      <div class="cat-overlay"></div>
+      <div class="cat-glass-chip"><div class="cat-name">Pantalons Ajustés</div><div class="cat-count">65 articles</div></div>
+    </div>
+    <div class="cat-card" onclick="showToast('Explorer Vestes & Blazers')">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=800&fit=crop" alt="Vestes & Blazers">
+      <div class="cat-overlay"></div>
+      <div class="cat-glass-chip"><div class="cat-name">Vestes & Blazers</div><div class="cat-count">55 articles</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="products">
+  <div class="section-header reveal">
+    <span class="section-tag">Sélection</span>
+    <h2 class="section-title">Pièces phares</h2>
+  </div>
+  <div class="products-grid reveal">
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop" alt="Blazer Architect Slim">
+        <span class="badge badge-new">NOUVEAU</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Blazer Architect Slim')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Atelier</div>
+        <div class="prod-name">Blazer Architect Slim</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">189 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Blazer Architect Slim')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=800&fit=crop" alt="Chemise Oxford Prestige">
+        <span class="badge badge-best">BESTSELLER</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Chemise Oxford Prestige')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Essentials</div>
+        <div class="prod-name">Chemise Oxford Prestige</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">95 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Chemise Oxford Prestige')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&h=800&fit=crop" alt="Tailleur Élysée">
+        <span class="badge badge-sale">-30%</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Tailleur Élysée')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Femme</div>
+        <div class="prod-name">Tailleur Élysée</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">210 €</span><span class="prod-price-old">299 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Tailleur Élysée')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=800&fit=crop" alt="Derby Leather Pro">
+        <span class="badge badge-prestige">ÉDITION</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Derby Leather Pro')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Cuir</div>
+        <div class="prod-name">Derby Leather Pro</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">235 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Derby Leather Pro')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1589756823695-278bc923f962?w=600&h=800&fit=crop" alt="Cravate Soie Milano">
+        <span class="badge badge-new">LIMITÉE</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Cravate Soie Milano')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Accessoires</div>
+        <div class="prod-name">Cravate Soie Milano</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">68 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Cravate Soie Milano')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1547949003-9792a18a2601?w=600&h=800&fit=crop" alt="Sac Business Cuir">
+        <span class="badge badge-sale">-20%</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Sac Business Cuir')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Maroquinerie</div>
+        <div class="prod-name">Sac Business Cuir</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">179 €</span><span class="prod-price-old">224 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Sac Business Cuir')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=800&fit=crop" alt="Gilet Mérinos Edition">
+        <span class="badge badge-new">NOUVEAU</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Gilet Mérinos Edition')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Studio</div>
+        <div class="prod-name">Gilet Mérinos Edition</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">148 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Gilet Mérinos Edition')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&h=800&fit=crop" alt="Montre Chronographe">
+        <span class="badge badge-prestige">PRESTIGE</span>
+        <button class="prod-quick-add" onclick="addToCart(event,'Montre Chronographe')" aria-label="Ajouter au panier">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">U VIBS Horlogerie</div>
+        <div class="prod-name">Montre Chronographe</div>
+        <div class="prod-footer">
+          <div><span class="prod-price">420 €</span></div>
+          <button class="add-to-cart-btn" onclick="addToCart(event,'Montre Chronographe')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="features-wrap reveal">
+    <div class="feat-item">
+      <div class="feat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </div>
+      <div class="feat-title">Livraison Express</div>
+      <div class="feat-desc">Offerte dès 150€ d'achat en France</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="20 9 11 20 4 13"/></svg>
+      </div>
+      <div class="feat-title">Retours Gratuits</div>
+      <div class="feat-desc">30 jours satisfait ou remboursé</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg>
+      </div>
+      <div class="feat-title">Qualité Atelier</div>
+      <div class="feat-desc">Confection française certifiée</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+      <div class="feat-title">Service Concierge</div>
+      <div class="feat-desc">Conseils personnalisés 7j/7</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header reveal" style="text-align:center;">
+    <span class="section-tag" style="display:inline-block;">Témoignages</span>
+    <h2 class="section-title">Ce qu'ils en pensent</h2>
+  </div>
+  <div class="testi-grid reveal">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"La qualité est exceptionnelle. Mon blazer Architect a transformé mes rendez-vous professionnels. La coupe est parfaite, le tissu magnifique."</p>
+      <div class="testi-author">
+        <div class="testi-av">AM</div>
+        <div><div class="testi-name">Antoine Moreau</div><div class="testi-role">Directeur Commercial</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Le tailleur Élysée est une merveille. Élégant, confortable, je reçois des compliments à chaque réunion. U VIBS est devenu ma référence."</p>
+      <div class="testi-author">
+        <div class="testi-av">SL</div>
+        <div><div class="testi-name">Sophie Laurent</div><div class="testi-role">Avocate Associée</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Service client irréprochable et des pièces qui durent dans le temps. Les matières sont nobles, les finitions impeccables. Je recommande."</p>
+      <div class="testi-author">
+        <div class="testi-av">KB</div>
+        <div><div class="testi-name">Karim Benali</div><div class="testi-role">Consultant Senior</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTACT WHATSAPP ── -->
+<div class="section" id="contact">
+  <div class="newsletter-wrap reveal">
+    <span class="section-tag" style="display:inline-block;margin-bottom:16px;">Contact</span>
+    <h2 class="newsletter-title">Écrivez-nous sur WhatsApp</h2>
+    <p class="newsletter-sub">Une question, une commande, un conseil ? Remplissez le formulaire : votre message s'ouvrira directement dans WhatsApp.</p>
+    <form class="contact-form" id="waForm" novalidate>
+      <input type="text" id="waName" class="newsletter-input" placeholder="Votre nom" required>
+      <input type="tel" id="waPhone" class="newsletter-input" placeholder="Votre téléphone (facultatif)">
+      <textarea id="waMsg" class="newsletter-input" placeholder="Votre message" required></textarea>
+      <button type="submit" class="wa-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.100 3.200 5.100 4.500.7.3 1.300.5 1.700.6.7.2 1.400.2 1.900.1.600-.1 1.700-.7 2-1.400.2-.7.2-1.300.2-1.400-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.600 15L2 22l5.200-1.400A10 10 0 1 0 12 2zm0 18.200c-1.500 0-3-.4-4.200-1.200l-.3-.2-3.100.8.8-3-.2-.3A8.200 8.200 0 1 1 12 20.200z"/></svg>
+        Envoyer sur WhatsApp
+      </button>
+    </form>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">U VIBS</div>
+      <p class="footer-desc">Vêtements professionnels pour les ambitions d'aujourd'hui. Conçus pour durer, pensés pour impressionner.</p>
+    </div>
+    <div class="footer-col"><h4>Collections</h4><ul><li><a href="#categories">Catégories</a></li><li><a href="#products">Pièces phares</a></li></ul></div>
+    <div class="footer-col"><h4>Service client</h4><ul><li><a href="#contact">Contact</a></li></ul></div>
+    <div class="footer-col"><h4>La marque</h4><ul><li><a href="#">Notre histoire</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">© 2026 U VIBS — Tous droits réservés. Design et savoir-faire français.</div>
+</footer>
+
+<script>
+// ── CONFIG WHATSAPP ────────────────────────────────────────────────
+// Format international sans "+" : indicatif 229 (Bénin) + numéro
+const WA_NUMBER = '2290163361321';
+
+// ── TOAST ──────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, ok = true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = ok ? 'rgba(41,151,255,0.45)' : 'rgba(255,69,58,0.45)';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── CART ───────────────────────────────────────────────────────────
+let cartN = 0;
+function addToCart(e, name) {
+  e.stopPropagation();
+  cartN++;
+  const el = document.getElementById('cartCount');
+  el.textContent = cartN;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 400);
+  showToast(`✓ ${name} ajouté au panier`);
+}
+
+// ── FORMULAIRE WHATSAPP ────────────────────────────────────────────
+document.getElementById('waForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('waName').value.trim();
+  const phone = document.getElementById('waPhone').value.trim();
+  const msg = document.getElementById('waMsg').value.trim();
+
+  if (!name) { showToast('Entrez votre nom', false); return; }
+  if (!msg) { showToast('Écrivez votre message', false); return; }
+
+  let text = `Bonjour U VIBS,\n\nNom : ${name}\n`;
+  if (phone) text += `Téléphone : ${phone}\n`;
+  text += `\nMessage : ${msg}`;
+
+  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank', 'noopener');
+  showToast('✓ Ouverture de WhatsApp…');
+  e.target.reset();
+});
+
+// ── NAV BUTTONS ────────────────────────────────────────────────────
+document.getElementById('searchBtn').addEventListener('click', () => showToast('Recherche disponible prochainement', false));
+document.getElementById('cartBtn').addEventListener('click', () => showToast(`Panier : ${cartN} article${cartN !== 1 ? 's' : ''}`));
+document.getElementById('discoverBtn').addEventListener('click', () => {
+  document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
+});
+document.getElementById('lookbookBtn').addEventListener('click', () => {
+  document.getElementById('contact').scrollIntoView({ behavior:'smooth', block:'start' });
+});
+
+// ── SCROLL REVEAL ──────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold:0.08, rootMargin:'0px 0px -20px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── NAVBAR SCROLL ──────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  nav.style.background = window.scrollY > 60
+    ? 'rgba(8,8,12,0.92)'
+    : 'rgba(14,14,20,0.75)';
+});
+
+// ── PARALLAX ───────────────────────────────────────────────────────
+const canvas = document.querySelector('.bg-canvas');
+document.addEventListener('mousemove', e => {
+  const x = (e.clientX / window.innerWidth - .5) * 30;
+  const y = (e.clientY / window.innerHeight - .5) * 20;
+  canvas.style.transform = `translate(${x * .3}px, ${y * .2}px)`;
+});
+</script>
+
+</body>
+</html>
